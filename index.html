@@ -1,1001 +1,275 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mugen Hyper V2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <title>Mugen Hyper V3</title>
     <style>
         body {
             margin: 0;
-            overflow: hidden;
-            font-family: 'Playfair Display', serif;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            position: relative;
-            background: #0a1a3a;
-            transition: all 1s ease;
-        }
-        #webglCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-            opacity: 0.9;
-        }
-        #particleCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 2;
-            opacity: 0.7;
-        }
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.3), rgba(29, 78, 216, 0.3));
-            z-index: 3;
-        }
-        .container {
-            background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(29, 78, 216, 0.95));
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.9), 0 0 1rem rgba(37, 99, 235, 0.8);
-            max-width: 90%;
-            width: 22rem;
-            border: 0.2rem solid #d4af37;
-            z-index: 4;
-            position: relative;
-            transform: perspective(40rem) rotateX(6deg) rotateY(6deg);
-            transition: transform 0.5s ease;
-        }
-        .container:hover {
-            transform: perspective(40rem) rotateX(0deg) rotateY(0deg) scale(1.05);
-        }
-        @keyframes float {
-            0%, 100% { transform: perspective(40rem) rotateX(6deg) rotateY(6deg) translateY(0); }
-            50% { transform: perspective(40rem) rotateX(6deg) rotateY(6deg) translateY(-0.5rem); }
-        }
-        .emblem {
-            position: absolute;
-            top: -3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4rem;
-            height: 4rem;
-            animation: spinEmblem 6s infinite linear, glowEmblem 2s infinite ease-in-out;
-        }
-        @keyframes spinEmblem {
-            from { transform: translateX(-50%) rotateY(0deg); }
-            to { transform: translateX(-50%) rotateY(360deg); }
-        }
-        @keyframes glowEmblem {
-            0%, 100% { filter: drop-shadow(0 0 0.5rem #d4af37); }
-            50% { filter: drop-shadow(0 0 1rem #d4af37); }
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-            color: #f3e8ff;
-            text-shadow: 0 0 0.8rem rgba(147, 197, 253, 0.9), 0 0 1rem rgba(212, 175, 55, 0.5);
-            position: relative;
-            animation: glitch 2s infinite;
-        }
-        @keyframes glitch {
-            0% { transform: translate(0); opacity: 1; }
-            2% { transform: translate(0.1rem, -0.1rem); opacity: 0.8; }
-            4% { transform: translate(-0.1rem, 0.1rem); opacity: 0.9; }
-            6% { transform: translate(0); opacity: 1; }
-        }
-        p {
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.9rem;
-            color: #e5e7eb;
-            margin: 0.5rem 0;
-        }
-        button {
-            background: linear-gradient(90deg, #1e40af, #2563eb);
-            color: #ffffff_;
-            border: 0.15rem solid #d4af37;
-            padding: 0.6rem 1rem;
-            margin: 0.3rem 0;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            font-family: 'Playfair Display', serif;
-            position: relative;
-            overflow: hidden;
-            transform: perspective(20rem) rotateX(10deg);
-            transition: all 0.4s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
-            transform: rotate(45deg);
-            transition: 0.6s;
-            opacity: 0;
-        }
-        button:hover:not(:disabled)::after {
-            opacity: 1;
-            transform: rotate(45deg) translate(50%, 50%);
-        }
-        button:disabled {
-            background: #4b5563;
-            border-color: #4b5563;
-            cursor: not-allowed;
-            transform: perspective(20rem) rotateX(0deg);
-        }
-        button:hover:not(:disabled) {
-            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-            transform: perspective(20rem) rotateX(0deg) scale(1.1);
-            box-shadow: 0 0.3rem 0.8rem rgba(59, 130, 246, 0.9);
-        }
-        .page {
-            display: none;
-            margin-top: 1rem;
-            color: #e5e7eb;
-            font-family: 'Roboto', sans-serif;
-            opacity: 0;
-            transition: opacity 3s ease;
-            text-align: center;
-        }
-        .page.active {
-            display: block;
-            opacity: 1;
-        }
-        #premiumContent h2 {
-            animation: typeWriter 3s steps(40) forwards;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 0.1rem solid #d4af37;
-            font-size: 1.2rem;
-            margin: 0 0 0.8rem 0;
-        }
-        @keyframes typeWriter {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        #note, #expire {
-            font-size: 0.9rem;
-            color: #bfdbfe;
-            text-shadow: 0 0 0.4rem rgba(191, 219, 254, 0.7);
-            margin: 0.4rem 0;
-        }
-        #premiumContent p {
-            font-size: 0.9rem;
-            margin: 0.4rem 0;
-        }
-        #hallOfShame h3 {
-            font-size: 1rem;
-            margin: 0.5rem 0;
-            color: #ffffff;
-            text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
-        }
-        #hallOfShame p {
-            font-size: 0.8rem;
-            margin: 0.3rem 0;
-            color: #ffffff;
-            text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
-        }
-        #shameList {
-            max-height: 150px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-            scrollbar-width: thin;
-            scrollbar-color: #d4af37 #1e40af;
-        }
-        #shameList::-webkit-scrollbar {
-            width: 8px;
-        }
-        #shameList::-webkit-scrollbar-track {
-            background: #1e40af;
-            border-radius: 4px;
-        }
-        #shameList::-webkit-scrollbar-thumb {
-            background: #d4af37;
-            border-radius: 4px;
-        }
-        #shameList::-webkit-scrollbar-thumb:hover {
-            background: #f3e8ff;
-        }
-        a {
-            color: #f3e8ff;
-            text-decoration: none;
-        }
-        a:hover {
-            color: #d4af37;
-            text-decoration: underline;
-        }
-        .diamond-icon {
-            display: inline-block;
-            width: 1.2rem;
-            height: 1.2rem;
-            background: url('https://img.icons8.com/ios-filled/50/d4af37/diamond.png') no-repeat center;
-            background-size: contain;
-            margin: 0 0.3rem;
-            animation: spinDiamond 3s infinite linear;
-        }
-        @keyframes spinDiamond {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .menu-toggle {
-            background: linear-gradient(90deg, #1e40af, #2563eb);
-            color: #ffffff;
-            border: 0.15rem solid #d4af37;
-            padding: 0.6rem 1rem;
-            margin: 0 0 1rem 0;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            font-family: 'Playfair Display', serif;
-            position: relative;
-            overflow: hidden;
-            transform: perspective(20rem) rotateX(10deg);
-            transition: all 0.4s ease;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .menu-toggle::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
-            transform: rotate(45deg);
-            transition: 0.6s;
-            opacity: 0;
-        }
-        .menu-toggle:hover::after {
-            opacity: 1;
-            transform: rotate(45deg) translate(50%, 50%);
-        }
-        .menu-toggle:hover {
-            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-            transform: perspective(20rem) rotateX(0deg) scale(1.1);
-            box-shadow: 0 0.3rem 0.8rem rgba(59, 130, 246, 0.9);
-        }
-        .menu {
-            list-style: none;
             padding: 0;
-            margin: 0;
-            max-height: 200px;
-            overflow-y: auto;
-            transition: max-height 0.3s ease-out;
-            z-index: 5;
-            position: relative;
-            scrollbar-width: thin;
-            scrollbar-color: #d4af37 #1e40af;
-        }
-        .menu::-webkit-scrollbar {
-            width: 8px;
-        }
-        .menu::-webkit-scrollbar-track {
-            background: #1e40af;
-            border-radius: 4px;
-        }
-        .menu::-webkit-scrollbar-thumb {
-            background: #d4af37;
-            border-radius: 4px;
-        }
-        .menu::-webkit-scrollbar-thumb:hover {
-            background: #f3e8ff;
-        }
-        .menu.open {
-            max-height: 200px;
-        }
-        .menu li {
-            margin-bottom: 0.3rem;
-        }
-        .menu li a, .menu li button {
-            display: block;
-            padding: 0.5rem 0.8rem;
-            font-size: 0.9rem;
-            background: linear-gradient(90deg, #1e40af, #2563eb);
-            color: #ffffff;
-            border: 0.15rem solid #d4af37;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transform: perspective(20rem) rotateX(10deg);
-            transition: all 0.4s ease;
-            box-sizing: border-box;
-            width: 100%;
-        }
-        .menu li a:hover, .menu li button:hover {
-            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-            transform: perspective(20rem) rotateX(0deg) scale(1.1);
-            box-shadow: 0 0.3rem 0.8rem rgba(59, 130, 246, 0.9);
-        }
-        .menu li a::after, .menu li button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
-            transform: rotate(45deg);
-            transition: 0.6s;
-            opacity: 0;
-        }
-        .menu li a:hover::after, .menu li button:hover::after {
-            opacity: 1;
-            transform: rotate(45deg) translate(50%, 50%);
-        }
-        #blockedMessage {
-            display: none;
-            color: #ff4444;
-            font-size: 1rem;
-            text-align: center;
-            margin-top: 1rem;
-            text-shadow: 0 0 0.4rem rgba(255, 68, 68, 0.7);
-        }
-        #bannedPage {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #ff4d4d, #ff6b6b, #ff8787);
-            z-index: 10;
+            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle, #FFD700 0%, #B8860B 50%, #8B0000 100%);
+            color: #fff;
+            display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            height: 100vh;
+            overflow: auto;
+            position: relative;
+        }
+
+        .container {
             text-align: center;
-            padding: 2rem;
-            box-sizing: border-box;
-            animation: fadeIn 1s ease-in;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 1s ease-in-out;
+            margin: 20px;
+            position: relative;
+            z-index: 1;
         }
-        #bannedPage.active {
-            display: flex;
+
+        h1 {
+            font-size: 2.5em;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+            margin-bottom: 20px;
+            animation: shine 4s linear infinite;
         }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, #FFD700, #DAA520);
+            border: 2px solid #B22222;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.5), transparent);
+            transition: 0.4s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .subscribe-btn {
+            background: linear-gradient(45deg, #B22222, #8B0000);
+            border: 2px solid #FFD700;
+        }
+
+        .subscribe-btn:hover {
+            background: linear-gradient(45deg, #FFD700, #DAA520);
+            color: #B22222;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #FFD700;
+        }
+
+        .continue-btn {
+            display: none;
+        }
+
+        .continue-btn:hover {
+            color: #B22222;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #FFD700;
+        }
+
+        .credit-btn, .shame-btn {
+            background: linear-gradient(45deg, #FFD700, #DAA520);
+        }
+
+        .credit-btn:hover, .shame-btn:hover {
+            color: #B22222;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #FFD700;
+        }
+
+        .note, .credit, .shame-list {
+            display: none;
+            margin-top: 20px;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #FFD700;
+            text-align: left;
+            padding: 15px;
+            border-left: 5px solid #B22222;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .shame-list {
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #FFD700 #B22222;
+        }
+
+        .shame-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .shame-list::-webkit-scrollbar-track {
+            background: #B22222;
+        }
+
+        .shame-list::-webkit-scrollbar-thumb {
+            background: #FFD700;
+            border-radius: 4px;
+        }
+
+        .validity {
+            font-size: 0.9em;
+            color: #FFD700;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Efek Animasi */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        #bannedPage h1 {
-            font-size: 2.5rem;
-            color: #ffffff;
-            text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5), 0 0 2rem rgba(255, 107, 107, 0.8);
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        #bannedPage p {
-            font-size: 1.2rem;
-            color: #fff5f5;
-            text-shadow: 0 0 0.5rem rgba(255, 245, 245, 0.7);
-            margin: 0.5rem 0;
-        }
-        #bannedPage .diamond-icon {
-            animation: spinDiamondBan 4s infinite linear;
-        }
-        @keyframes spinDiamondBan {
-            from { transform: rotate(0deg) scale(1.2); }
-            to { transform: rotate(360deg) scale(1.2); }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Media Queries untuk Responsivitas */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-                width: 85%;
-                max-width: 18rem;
-                transform: perspective(30rem) rotateX(4deg) rotateY(4deg);
-            }
-            h1 {
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-                letter-spacing: 0.15rem;
-            }
-            p {
-                font-size: 0.8rem;
-            }
-            button {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-                margin: 0.2rem 0;
-            }
-            .emblem {
-                top: -2.5rem;
-                width: 3.5rem;
-                height: 3.5rem;
-            }
-            #premiumContent h2 {
-                font-size: 1rem;
-            }
-            #premiumContent p {
-                font-size: 0.8rem;
-            }
-            #note, #expire {
-                font-size: 0.8rem;
-            }
-            #hallOfShame h3 {
-                font-size: 0.9rem;
-            }
-            #hallOfShame p {
-                font-size: 0.7rem;
-            }
-            #shameList {
-                max-height: 120px;
-            }
-            .menu-toggle {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.9rem;
-            }
-            .menu li a, .menu li button {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.7rem;
-            }
-            #blockedMessage {
-                font-size: 0.9rem;
-            }
-            #bannedPage h1 {
-                font-size: 2rem;
-            }
-            #bannedPage p {
-                font-size: 1rem;
-            }
+        @keyframes shine {
+            0% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
+            50% { text-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700; }
+            100% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 0.5rem;
-                width: 90%;
-                max-width: 16rem;
-                transform: perspective(20rem) rotateX(2deg) rotateY(2deg);
-            }
-            h1 {
-                font-size: 1.2rem;
-                margin-bottom: 0.8rem;
-                letter-spacing: 0.1rem;
-            }
-            p {
-                font-size: 0.7rem;
-            }
-            button {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.7rem;
-                margin: 0.2rem 0;
-            }
-            .emblem {
-                top: -2rem;
-                width: 3rem;
-                height: 3rem;
-            }
-            #premiumContent h2 {
-                font-size: 0.9rem;
-            }
-            #premiumContent p {
-                font-size: 0.7rem;
-            }
-            #note, #expire {
-                font-size: 0.7rem;
-            }
-            #hallOfShame h3 {
-                font-size: 0.8rem;
-            }
-            #hallOfShame p {
-                font-size: 0.6rem;
-            }
-            #shameList {
-                max-height: 100px;
-            }
-            .menu-toggle {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            .menu li a, .menu li button {
-                padding: 0.3rem 0.5rem;
-                font-size: 0.6rem;
-            }
-            #blockedMessage {
-                font-size: 0.8rem;
-            }
-            #bannedPage h1 {
-                font-size: 1.5rem;
-            }
-            #bannedPage p {
-                font-size: 0.9rem;
-            }
+        /* Partikel Emas yang Dioptimalkan */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #FFD700;
+            border-radius: 50%;
+            opacity: 0.7;
+            box-shadow: 0 0 8px #FFD700;
+            animation: float 6s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0.7; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            .btn { font-size: 1em; padding: 12px 25px; }
+            .container { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <canvas id="webglCanvas"></canvas>
-    <canvas id="particleCanvas"></canvas>
-    <div class="overlay"></div>
-    <div class="container" id="mainContainer">
-        <button class="menu-toggle" id="menuToggleBtn">Menu <span class="diamond-icon"></span></button>
-        <ul class="menu">
-            <li><a href="https://youtube.com/@themugenking?si=xHcLhvJnGXWcE_ZG" target="_blank"><button>Subscribe</button></a></li>
-            <li><button id="creditBtn">Credit</button></li>
-            <li><button id="hallOfShameBtn">Hall of Shame</button></li>
-            <li><button id="contactSupportBtn">Feedback</button></li>
-        </ul>
-        <svg class="emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 10 L90 90 H10 Z" fill="#d4af37"/>
-            <path d="M50 20 L80 80 H20 Z" fill="#1e40af"/>
-            <circle cx="50" cy="50" r="25" fill="#f3e8ff"/>
-            <text x="50" y="55" font-size="18" fill="#d4af37" text-anchor="middle" font-family="'Playfair Display', serif">VIP</text>
-        </svg>
-        <h1><span class="diamond-icon"></span> ZR <span class="diamond-icon"></span></h1>
-        <div id="page1" class="page">
-        <p>Step 1: Subscribe To Our Channel For Unlock Access<p>
-        <p>Step 2: Don't UnSubscribe Or I Will Delete Your Whitelist User:D<p>
-        <p>Step 3: Just Enjoy it And Don't Be A Bully And Hater<p>
-            <button id="continueBtn" disabled>Continue <span class="diamond-icon"></span></button>
-        </div>
-        <div id="page2" class="page">
-            <div id="premiumContent">
-            <h2>Congratulations You Have Login In</h2>
-            <p>You Have Subscribed To Our Channel <span class="diamond-icon"></span></p>
+    <div class="particles" id="particles"></div>
+    <div class="container">
+        <h1>Welcome to TheMugenKing</h1>
+        <a href="https://youtube.com/@themugenking?si=xHcLhvJnGXWcE_ZG" target="_blank" class="btn subscribe-btn" onclick="showContinue()">Subscribe</a>
+        <a href="#" class="btn continue-btn" onclick="showNote()">Continue</a>
+        <a href="#" class="btn credit-btn" onclick="showCredit()">Credit</a>
+        <a href="#" class="btn shame-btn" onclick="showShameList()">Hall of Shame</a>
+        <div class="note" id="note">
+            <p><strong>Congratulations You Have Logged In</strong></p>
+            <p>You Have Subscribed To Our Channel</p>
             <p>It Will Automatically Open Soon</p>
             <p>It Will Automatically Add Your Username To Whitelist</p>
             <p>If You Unsubscribe, We Will Delete Your Whitelist User</p>
-            <p>Now type 'Subscribe' In The Box Below To Unlock</p>
-            </div>
-            <div id="note">Note: Your Subscription Helps Us Create More Awesome Script</div>
-            <div id="expire">Valid Until: December 31, 2026 <span class="diamond-icon"></span></div>
+            <p>Note: Your Subscription Helps Us Create More Awesome Script</p>
+            <p class="validity">Valid Until: December 31, 3039</p>
         </div>
-        <div id="creditPage" class="page">
-            <h2>Credits</h2>
-            <p>Created by: TheMugenKing</p>
+        <div class="credit" id="credit">
+            <p><strong>Credit:</strong></p>
+            <p>TheMugenKing</p>
+            <p>Subscribe TheMugenKing</p>
             <p>ZR Team</p>
+            <p><strong>Feedback</strong></p>
+            <p>Script Not Working?<p>
+            <p>Contact Me In Discord: themugenking<p>
         </div>
-        <div id="hallOfShame" class="page">
-            <h3>Hall of Shame</h3>
-            <h3>You're Got Roles Clown</h3>
-            <div id="shameList"></div>
+        <div class="shame-list" id="shameList">
+            <p><strong>Hall of Shame</strong></p>
+            <ul>
+                <li>debetbebet</li>
+                <li>erickrmbl65</li>
+                <li>arcrider2012</li>
+                <li>darkgodnb</li>
+                <li>Sc1p7T3sTer</li>
+                <li>BersekerRokan</li>
+                <li>moonxzp</li>
+                <li>TheKeyMan</li>
+            </ul>
         </div>
-        <div id="contactSupportPage" class="page">
-            <h2>Feedback</h2>
-            <p>Hello There</p>
-            <p>Script Not Working?, Don't worry</p>
-            <p>Contact Me In Discord: themugenking</p>
-        </div>
-        <div id="blockedMessage">Orang Ini Telah Diblokir: <span id="blockedUserName"></span></div>
-    </div>
-    <div id="bannedPage">
-        <h1><span class="diamond-icon"></span> ACCESS DENIED <span class="diamond-icon"></span></h1>
-        <p>If You See This Page It Means You Are Banned For Spam And This Will Be Permanent And Cannot Be Recovered</p>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script>
-        // WebGL Nebula Background (Enhanced)
-        const webglCanvas = document.getElementById('webglCanvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: webglCanvas, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.position.z = 5;
-
-        const geometry = new THREE.PlaneGeometry(10, 10, 32, 32);
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 },
-                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform float time;
-                uniform vec2 resolution;
-                varying vec2 vUv;
-
-                void main() {
-                    vec2 uv = vUv;
-                    vec2 p = uv * 8.0 - vec2(4.0);
-                    float d = length(p);
-                    float a = atan(p.y, p.x);
-                    float r = sin(time * 0.2 + a * 3.0 + sin(time * 0.1 + a * 4.0)) * 0.5 + 0.5;
-                    float nebula = sin(d * 2.0 + time * 0.3) * r * 0.5 + 0.5;
-                    vec3 color = vec3(0.1, 0.4, 0.8) * nebula + vec3(0.9, 0.6, 0.2) * r * 0.3;
-                    color += vec3(0.8, 0.2, 0.4) * sin(time + uv.x * 10.0) * 0.1;
-                    gl_FragColor = vec4(color, 0.9);
-                }
-            `
-        });
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-
-        function animateWebGL() {
-            requestAnimationFrame(animateWebGL);
-            material.uniforms.time.value += 0.02;
-            mesh.rotation.z += 0.001;
-            renderer.render(scene, camera);
-        }
-        animateWebGL();
-
-        // Interactive Crystal Particles (Enhanced)
-        const particleCanvas = document.getElementById('particleCanvas');
-        const ctx = particleCanvas.getContext('2d');
-        particleCanvas.width = window.innerWidth;
-        particleCanvas.height = window.innerHeight;
-
-        const particles = [];
-        let mouse = { x: null, y: null };
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * particleCanvas.width;
-                this.y = Math.random() * particleCanvas.height;
-                this.size = Math.random() * 4 + 2;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-                this.hue = Math.random() * 360;
-                this.alpha = Math.random() * 0.8 + 0.2;
-            }
-            update() {
-                if (mouse.x && mouse.y) {
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < 200) {
-                        this.speedX += dx / distance * 0.3;
-                        this.speedY += dy / distance * 0.3;
-                        this.size = Math.min(this.size + 0.2, 6);
-                        this.alpha = Math.min(this.alpha + 0.1, 0.9);
-                    }
-                }
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.size > 0.5) this.size -= 0.02;
-                if (this.alpha > 0.2) this.alpha -= 0.005;
-                if (this.x < 0 || this.x > particleCanvas.width) this.speedX *= -0.9;
-                if (this.y < 0 || this.y > particleCanvas.height) this.speedY *= -0.9;
-            }
-            draw() {
-                ctx.fillStyle = `hsla(${this.hue}, 70%, 60%, ${this.alpha})`;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y - this.size);
-                ctx.lineTo(this.x + this.size * 0.7, this.y + this.size * 0.7);
-                ctx.lineTo(this.x - this.size * 0.7, this.y + this.size * 0.7);
-                ctx.closePath();
-                ctx.fill();
-                ctx.strokeStyle = `hsla(${this.hue + 30}, 70%, 80%, ${this.alpha * 0.5})`;
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-            }
+        // Fungsi untuk menampilkan tombol Continue
+        function showContinue() {
+            setTimeout(() => {
+                document.querySelector('.continue-btn').style.display = 'inline-block';
+            }, 1000);
         }
 
-        function initParticles() {
-            for (let i = 0; i < 60; i++) {
-                particles.push(new Particle());
-            }
+        // Fungsi untuk menampilkan Note
+        function showNote() {
+            document.querySelector('.note').style.display = 'block';
+            document.querySelector('.continue-btn').style.display = 'none';
+            document.querySelector('.subscribe-btn').style.display = 'none';
         }
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-            particles.forEach((p, index) => {
-                p.update();
-                p.draw();
-                if (p.size <= 0.5 || p.alpha <= 0.2) {
-                    particles.splice(index, 1);
-                    particles.push(new Particle());
-                }
-            });
-            requestAnimationFrame(animateParticles);
+        // Fungsi untuk menampilkan/menyembunyikan Credit
+        function showCredit() {
+            const credit = document.querySelector('.credit');
+            credit.style.display = credit.style.display === 'block' ? 'none' : 'block';
         }
 
-        document.addEventListener('mousemove', e => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-
-        initParticles();
-        animateParticles();
-
-        // Parallax Effect
-        document.addEventListener('mousemove', e => {
-            const container = document.getElementById('mainContainer');
-            const x = (e.clientX / window.innerWidth - 0.5) * 20;
-            const y = (e.clientY / window.innerHeight - 0.5) * 20;
-            container.style.transform = `perspective(40rem) rotateX(${y}deg) rotateY(${x}deg)`;
-        });
-
-        // Sound Effects
-        function playClickSound() {
-            const audio = new Audio('');
-            audio.play().catch(e => console.log('Audio play failed:', e));
+        // Fungsi untuk menampilkan/menyembunyikan Hall of Shame List
+        function showShameList() {
+            const shameList = document.querySelector('.shame-list');
+            shameList.style.display = shameList.style.display === 'block' ? 'none' : 'block';
         }
 
-        function playHoverSound() {
-            const audio = new Audio('');
-            audio.play().catch(e => console.log('Audio play failed:', e));
+        // Partikel Emas yang Dioptimalkan
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.animationDuration = Math.random() * 2 + 4 + 's';
+            document.getElementById('particles').appendChild(particle);
+            setTimeout(() => particle.remove(), 6000);
         }
 
-        function playAmbientSound() {
-            const audio = new Audio('https://www.soundjay.com/ambient/ambient-space-drone-01.mp3');
-            audio.loop = true;
-            audio.volume = 0.3;
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        }
-
-        window.addEventListener('load', playAmbientSound);
-
-        // Initialize variables
-        let mouseMovements = [];
-        let sessionStartTime = performance.now();
-        const sessionId = Math.random().toString(36).substring(2, 15);
-        const accessTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' });
-        let focusTimeStart = performance.now();
-        let totalFocusTime = 0;
-        let interactionCount = 0;
-        let lastFeedbackTime = 0;
-        const spamThreshold = 500;
-        const timeThreshold = 10000;
-
-        // Anti-bypass system
-        let hasSubscribed = false;
-        const subscribePage1Btn = document.querySelector('.menu li a');
-        const continueBtn = document.getElementById('continueBtn');
-        const creditBtn = document.getElementById('creditBtn');
-        const hallOfShameBtn = document.getElementById('hallOfShameBtn');
-        const contactSupportBtn = document.getElementById('contactSupportBtn');
-        const menuToggleBtn = document.getElementById('menuToggleBtn');
-        let isMenuOpen = false;
-
-        // Cek status blokir saat halaman dimuat
-        function checkBlockedStatus() {
-            if (localStorage.getItem('isBanned')) {
-                const bannedUser = localStorage.getItem('bannedUser');
-                document.getElementById('bannedPage').classList.add('active');
-                document.body.style.background = 'linear-gradient(135deg, #ff4d4d, #ff6b6b)';
-                disableAllInteractions();
-                return true;
-            }
-            return false;
-        }
-
-        function disableAllInteractions() {
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.disabled = true;
-            });
-            document.querySelectorAll('input, textarea').forEach(input => {
-                input.disabled = true;
-            });
-        }
-
-        // Fungsi untuk memperbarui Hall of Shame
-        function updateHallOfShame(name, status) {
-            const shameList = document.getElementById('shameList');
-            const existingEntry = Array.from(shameList.getElementsByTagName('p')).find(p => p.textContent.includes(name));
-            if (!existingEntry) {
-                const newShame = document.createElement('p');
-                newShame.textContent = `User: ${name}`;
-                newShame.style.color = '#ffffff';
-                shameList.appendChild(newShame);
-            }
-        }
-
-        // Contoh: Menambahkan beberapa nama ke Hall of Shame untuk menguji scroll
-        function populateHallOfShame() {
-            const sampleUsers = [
-                { name: "debetbebet", status: "Clown" },
-                { name: "erickrmbl65", status: "Clown" },
-                { name: "arcrider2012", status: "Clown" },
-                { name: "darkgodnb", status: "Clown" },
-                { name: "Sc1p7T3sTer", status: "Clown" },
-                { name: "BersekerRokan", status: "Clown" },
-                { name: "Tester", status: "Clown" },
-            ];
-            sampleUsers.forEach(user => updateHallOfShame(user.name, user.status));
-        }
-
-        // Panggil fungsi untuk mengisi Hall of Shame saat halaman dimuat
-        window.addEventListener('load', populateHallOfShame);
-
-        // Show initial page
-        if (!checkBlockedStatus()) {
-            document.getElementById('page1').classList.add('active');
-        }
-
-        // Menu toggle functionality
-        menuToggleBtn.addEventListener('click', () => {
-            if (!checkBlockedStatus()) {
-                isMenuOpen = !isMenuOpen;
-                const menu = document.querySelector('.menu');
-                menu.classList.toggle('open', isMenuOpen);
-                playClickSound();
-            }
-        });
-
-        // Event listeners
-        subscribePage1Btn.addEventListener('click', () => {
-            if (!checkBlockedStatus()) {
-                hideAllPages();
-                document.getElementById('page1').classList.add('active');
-                playClickSound();
-                hasSubscribed = true;
-                continueBtn.disabled = false;
-            }
-        });
-
-        continueBtn.addEventListener('click', () => {
-            if (!checkBlockedStatus() && !hasSubscribed) {
-                return;
-            }
-            hideAllPages();
-            document.getElementById('page2').classList.add('active');
-            document.getElementById('premiumContent').classList.add('active');
-            document.getElementById('note').classList.add('active');
-            document.getElementById('expire').classList.add('active');
-            playClickSound();
-        });
-
-        creditBtn.addEventListener('click', () => {
-            if (!checkBlockedStatus()) {
-                hideAllPages();
-                document.getElementById('creditPage').classList.add('active');
-                playClickSound();
-            }
-        });
-
-        hallOfShameBtn.addEventListener('click', () => {
-            if (!checkBlockedStatus()) {
-                hideAllPages();
-                document.getElementById('hallOfShame').classList.add('active');
-                playClickSound();
-            }
-        });
-
-        contactSupportBtn.addEventListener('click', () => {
-            if (!checkBlockedStatus()) {
-                hideAllPages();
-                document.getElementById('contactSupportPage').classList.add('active');
-                playClickSound();
-            }
-        });
-
-        // Helper function to hide all pages
-        function hideAllPages() {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById('premiumContent').classList.remove('active');
-            document.getElementById('note').classList.remove('active');
-            document.getElementById('expire').classList.remove('active');
-        }
-
-        subscribePage1Btn.addEventListener('mouseenter', playHoverSound);
-        continueBtn.addEventListener('mouseenter', playHoverSound);
-        creditBtn.addEventListener('mouseenter', playHoverSound);
-        hallOfShameBtn.addEventListener('mouseenter', playHoverSound);
-        contactSupportBtn.addEventListener('mouseenter', playHoverSound);
-        menuToggleBtn.addEventListener('mouseenter', playHoverSound);
-
-        // Mouse movement tracking
-        document.addEventListener('mousemove', (e) => {
-            mouseMovements.push({ x: e.clientX, y: e.clientY, time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }) });
-            if (mouseMovements.length > 10) mouseMovements.shift();
-            interactionCount++;
-        });
-
-        // Window focus time tracking
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                focusTimeStart = performance.now();
-            } else {
-                totalFocusTime += (performance.now() - focusTimeStart) / 1000;
-            }
-        });
-
-        // Basic bot detection
-        function detectBot() {
-            const timeSinceLoad = (performance.now() - sessionStartTime) / 1000;
-            const hasMinimalInteraction = interactionCount < 3;
-            const isTooFast = timeSinceLoad < 2 && hasSubscribed;
-            return (hasMinimalInteraction || isTooFast) ? 'Possible bot' : 'Likely human';
-        }
-
-        // Collect device and user data
-        async function collectData() {
-            const parser = new UAParser();
-            const uaResult = parser.getResult();
-            let ipData = {};
-            let location = 'Not available';
-            let zipcode = 'Not available';
-            let batteryInfo = 'Not available';
-            let connectionType = 'Not available';
-
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                ipData = await response.json();
-                location = `${ipData.city || 'Unknown'}, ${ipData.region || 'Unknown'}, ${ipData.country_name || 'Unknown'}`;
-                zipcode = ipData.postal || 'Not available';
-            } catch (error) {
-                console.error('Error fetching IP data:', error);
-            }
-
-            try {
-                if ('getBattery' in navigator) {
-                    const battery = await navigator.getBattery();
-                    batteryInfo = `${(battery.level * 100).toFixed(0)}% (Charging: ${battery.charging})`;
-                } else {
-                    batteryInfo = 'Battery API not found';
-                }
-            } catch (error) {
-                console.error('Error accessing Battery API:', error);
-                batteryInfo = 'Battery API access failed';
-            }
-
-            if (navigator.connection) {
-                connectionType = navigator.connection.effectiveType || 'Not available';
-            }
-
-            const duration = ((performance.now() - sessionStartTime) / 1000).toFixed(2) + ' seconds';
-            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Not available';
-            const focusTime = document.visibilityState === 'visible'
-                ? (totalFocusTime + (performance.now() - focusTimeStart) / 1000).toFixed(2) + ' seconds'
-                : totalFocusTime.toFixed(2) + ' seconds';
-            const botStatus = detectBot();
-
-            return {
-                ip: ipData.ip || 'Unknown',
-                browser: uaResult.browser.name + ' ' + uaResult.browser.version || 'Unknown',
-                platform: uaResult.os.name + ' ' + uaResult.os.version || 'Unknown',
-                device: uaResult.device.model || 'Unknown',
-                referrer: document.referrer || 'None',
-                resolution: `${window.screen.width}x${window.screen.height}`,
-                battery: batteryInfo,
-                language: navigator.language || 'Unknown',
-                mouseMovements: JSON.stringify(mouseMovements),
-                duration: duration,
-                sessionId: sessionId,
-                accessTime: accessTime,
-                location: location,
-                zipcode: zipcode,
-                timeZone: timeZone,
-                colorDepth: window.screen.colorDepth + ' bits' || 'Not available',
-                touchSupport: navigator.maxTouchPoints > 0 ? 'Yes (' + navigator.maxTouchPoints + ' points)' : 'No',
-                connectionType: connectionType,
-                cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
-                cpuCores: navigator.hardwareConcurrency || 'Not available',
-                memory: navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Not available',
-                focusTime: focusTime,
-                botStatus: botStatus
-            };
-        }
+        // Kurangi jumlah partikel untuk mencegah lag
+        setInterval(createParticle, 400);
     </script>
 </body>
 </html>
