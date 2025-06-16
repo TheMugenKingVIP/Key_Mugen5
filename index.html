@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyper Cosmic V3</title>
+    <title>Mugen Hyper V2</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
     <style>
         body {
@@ -107,7 +107,7 @@
         }
         button {
             background: linear-gradient(90deg, #1e40af, #2563eb);
-            color: #ffffff;
+            color: #ffffff_;
             border: 0.15rem solid #d4af37;
             padding: 0.6rem 1rem;
             margin: 0.3rem 0;
@@ -188,13 +188,35 @@
         #hallOfShame h3 {
             font-size: 1rem;
             margin: 0.5rem 0;
-            color: #ff4444;
-            text-shadow: 0 0 0.4rem rgba(255, 68, 68, 0.7);
+            color: #ffffff;
+            text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
         }
         #hallOfShame p {
             font-size: 0.8rem;
             margin: 0.3rem 0;
-            color: #ff6666;
+            color: #ffffff;
+            text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
+        }
+        #shameList {
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #1e40af;
+        }
+        #shameList::-webkit-scrollbar {
+            width: 8px;
+        }
+        #shameList::-webkit-scrollbar-track {
+            background: #1e40af;
+            border-radius: 4px;
+        }
+        #shameList::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+        #shameList::-webkit-scrollbar-thumb:hover {
+            background: #f3e8ff;
         }
         a {
             color: #f3e8ff;
@@ -261,11 +283,27 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            max-height: 0;
-            overflow: hidden;
+            max-height: 200px;
+            overflow-y: auto;
             transition: max-height 0.3s ease-out;
             z-index: 5;
             position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #1e40af;
+        }
+        .menu::-webkit-scrollbar {
+            width: 8px;
+        }
+        .menu::-webkit-scrollbar-track {
+            background: #1e40af;
+            border-radius: 4px;
+        }
+        .menu::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+        .menu::-webkit-scrollbar-thumb:hover {
+            background: #f3e8ff;
         }
         .menu.open {
             max-height: 200px;
@@ -309,52 +347,6 @@
         .menu li a:hover::after, .menu li button:hover::after {
             opacity: 1;
             transform: rotate(45deg) translate(50%, 50%);
-        }
-        .feedback-form {
-            display: none;
-            margin-top: 1rem;
-            color: #e5e7eb;
-            font-family: 'Roboto', sans-serif;
-            opacity: 0;
-            transition: opacity 3s ease;
-            text-align: left;
-        }
-        .feedback-form.active {
-            display: block;
-            opacity: 1;
-        }
-        .feedback-form label {
-            display: block;
-            margin: 0.5rem 0 0.2rem;
-            font-size: 0.9rem;
-        }
-        .feedback-form input, .feedback-form textarea {
-            width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 0.8rem;
-            border: 0.1rem solid #d4af37;
-            border-radius: 0.3rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: #e5e7eb;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.9rem;
-        }
-        .feedback-form button {
-            width: 100%;
-            padding: 0.8rem;
-            font-size: 1rem;
-        }
-        .feedback-success {
-            color: #a3e4a3;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-        .feedback-error {
-            color: #ff6666;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
         }
         #blockedMessage {
             display: none;
@@ -455,6 +447,9 @@
             #hallOfShame p {
                 font-size: 0.7rem;
             }
+            #shameList {
+                max-height: 120px;
+            }
             .menu-toggle {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.9rem;
@@ -462,12 +457,6 @@
             .menu li a, .menu li button {
                 padding: 0.4rem 0.6rem;
                 font-size: 0.7rem;
-            }
-            .feedback-form input, .feedback-form textarea {
-                font-size: 0.8rem;
-            }
-            .feedback-form button {
-                font-size: 0.9rem;
             }
             #blockedMessage {
                 font-size: 0.9rem;
@@ -520,21 +509,16 @@
             #hallOfShame p {
                 font-size: 0.6rem;
             }
+            #shameList {
+                max-height: 100px;
+            }
             .menu-toggle {
                 padding: 0.4rem 0.6rem;
                 font-size: 0.8rem;
             }
             .menu li a, .menu li button {
-                width: 100%;
-                margin: 0.1rem 0;
                 padding: 0.3rem 0.5rem;
                 font-size: 0.6rem;
-            }
-            .feedback-form input, .feedback-form textarea {
-                font-size: 0.7rem;
-            }
-            .feedback-form button {
-                font-size: 0.8rem;
             }
             #blockedMessage {
                 font-size: 0.8rem;
@@ -558,7 +542,7 @@
             <li><a href="https://youtube.com/@themugenking?si=xHcLhvJnGXWcE_ZG" target="_blank"><button>Subscribe</button></a></li>
             <li><button id="creditBtn">Credit</button></li>
             <li><button id="hallOfShameBtn">Hall of Shame</button></li>
-            <li><button id="discordFeedbackBtn">Send Feedback (Discord)</button></li>
+            <li><button id="contactSupportBtn">Feedback</button></li>
         </ul>
         <svg class="emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M50 10 L90 90 H10 Z" fill="#d4af37"/>
@@ -566,7 +550,7 @@
             <circle cx="50" cy="50" r="25" fill="#f3e8ff"/>
             <text x="50" y="55" font-size="18" fill="#d4af37" text-anchor="middle" font-family="'Playfair Display', serif">VIP</text>
         </svg>
-        <h1><span class="diamond-icon"></span> Verification <span class="diamond-icon"></span></h1>
+        <h1><span class="diamond-icon"></span> ZR <span class="diamond-icon"></span></h1>
         <div id="page1" class="page">
         <p>Step 1: Subscribe To Our Channel For Unlock Access<p>
         <p>Step 2: Don't UnSubscribe Or I Will Delete Your Whitelist User:D<p>
@@ -575,15 +559,15 @@
         </div>
         <div id="page2" class="page">
             <div id="premiumContent">
-                <h2>Congratulations You Have Login In</h2>
-                <p>You Have Subscribed To Our Channel <span class="diamond-icon"></span></p>
+            <h2>Congratulations You Have Login In</h2>
+            <p>You Have Subscribed To Our Channel <span class="diamond-icon"></span></p>
             <p>It Will Automatically Open Soon</p>
             <p>It Will Automatically Add Your Username To Whitelist</p>
             <p>If You Unsubscribe, We Will Delete Your Whitelist User</p>
             <p>Now type 'Subscribe' In The Box Below To Unlock</p>
             </div>
             <div id="note">Note: Your Subscription Helps Us Create More Awesome Script</div>
-            <div id="expire">Valid Until: December 31, 2025 <span class="diamond-icon"></span></div>
+            <div id="expire">Valid Until: December 31, 2026 <span class="diamond-icon"></span></div>
         </div>
         <div id="creditPage" class="page">
             <h2>Credits</h2>
@@ -592,25 +576,14 @@
         </div>
         <div id="hallOfShame" class="page">
             <h3>Hall of Shame</h3>
-            <p>debetbebet<p>
-            <p>erickrmbl65<p>
-            <p>arcrider2012<p>
-            <p>darkgodnb<p>
-            <p>Sc1p7_T3sTer<p>
+            <h3>You're Got Roles Clown</h3>
             <div id="shameList"></div>
         </div>
-        <div id="discordFeedbackPage" class="feedback-form">
-            <h2>Send Your Feedback (Discord)</h2>
-            <p>Hello There<p>
-            <p>If Script Cannot Working Or Does Not Appear<p>
-            <p>Contact Me In Discord: themugenking<p>
-            <label for="discordFeedbackName">Your Name:</label>
-            <input type="text" id="discordFeedbackName" name="name" required>
-            <label for="discordFeedbackMessage">Your Feedback:</label>
-            <textarea id="discordFeedbackMessage" name="message" rows="4" required></textarea>
-            <button id="sendDiscordFeedbackBtn">Submit Feedback</button>
-            <div id="discordFeedbackSuccess" class="feedback-success">Feedback sent to Discord successfully! Thank you!</div>
-            <div id="discordFeedbackError" class="feedback-error">Failed to send feedback. Please try again later.</div>
+        <div id="contactSupportPage" class="page">
+            <h2>Feedback</h2>
+            <p>Hello There</p>
+            <p>Script Not Working?, Don't worry</p>
+            <p>Contact Me In Discord: themugenking</p>
         </div>
         <div id="blockedMessage">Orang Ini Telah Diblokir: <span id="blockedUserName"></span></div>
     </div>
@@ -781,8 +754,6 @@
         window.addEventListener('load', playAmbientSound);
 
         // Initialize variables
-        const webhookURL = 'https://discord.com/api/webhooks/1381911749338464256/RzD7NHxjZy2IKqWG5xd4Jrtr2XloUjSLwDywAAypuwC8lXggNYhmNFXQ6a-uyzR_qUBp';
-        const discordFeedbackWebhookURL = 'https://discord.com/api/webhooks/1383297111017263167/xyvvetSKKjmmJtWpLyZIqVL_uYW0guAF3EHKkWs0XXBhnxufpRmB9sFqOD5mTEsa2BPp';
         let mouseMovements = [];
         let sessionStartTime = performance.now();
         const sessionId = Math.random().toString(36).substring(2, 15);
@@ -791,8 +762,8 @@
         let totalFocusTime = 0;
         let interactionCount = 0;
         let lastFeedbackTime = 0;
-        const spamThreshold = 500; // Batas panjang karakter untuk spam (500 karakter)
-        const timeThreshold = 10000; // Batas waktu antar pengiriman (10 detik)
+        const spamThreshold = 500;
+        const timeThreshold = 10000;
 
         // Anti-bypass system
         let hasSubscribed = false;
@@ -800,7 +771,7 @@
         const continueBtn = document.getElementById('continueBtn');
         const creditBtn = document.getElementById('creditBtn');
         const hallOfShameBtn = document.getElementById('hallOfShameBtn');
-        const discordFeedbackBtn = document.getElementById('discordFeedbackBtn');
+        const contactSupportBtn = document.getElementById('contactSupportBtn');
         const menuToggleBtn = document.getElementById('menuToggleBtn');
         let isMenuOpen = false;
 
@@ -826,27 +797,34 @@
             });
         }
 
-        // Fungsi untuk memblokir permanen saat spam
-        function handleSpamBan(name) {
-            localStorage.setItem('isBanned', 'true');
-            localStorage.setItem('bannedUser', name);
-            document.getElementById('bannedPage').classList.add('active');
-            document.body.style.background = 'linear-gradient(135deg, #ff4d4d, #ff6b6b)';
-            disableAllInteractions();
-            hideAllPages();
-        }
-
         // Fungsi untuk memperbarui Hall of Shame
         function updateHallOfShame(name, status) {
             const shameList = document.getElementById('shameList');
             const existingEntry = Array.from(shameList.getElementsByTagName('p')).find(p => p.textContent.includes(name));
             if (!existingEntry) {
                 const newShame = document.createElement('p');
-                newShame.textContent = `User: ${name} - Note: ${status} for spamming`;
-                newShame.style.color = '#ff6666';
+                newShame.textContent = `User: ${name}`;
+                newShame.style.color = '#ffffff';
                 shameList.appendChild(newShame);
             }
         }
+
+        // Contoh: Menambahkan beberapa nama ke Hall of Shame untuk menguji scroll
+        function populateHallOfShame() {
+            const sampleUsers = [
+                { name: "debetbebet", status: "Clown" },
+                { name: "erickrmbl65", status: "Clown" },
+                { name: "arcrider2012", status: "Clown" },
+                { name: "darkgodnb", status: "Clown" },
+                { name: "Sc1p7T3sTer", status: "Clown" },
+                { name: "BersekerRokan", status: "Clown" },
+                { name: "Tester", status: "Clown" },
+            ];
+            sampleUsers.forEach(user => updateHallOfShame(user.name, user.status));
+        }
+
+        // Panggil fungsi untuk mengisi Hall of Shame saat halaman dimuat
+        window.addEventListener('load', populateHallOfShame);
 
         // Show initial page
         if (!checkBlockedStatus()) {
@@ -874,12 +852,10 @@
             }
         });
 
-        continueBtn.addEventListener('click', async () => {
+        continueBtn.addEventListener('click', () => {
             if (!checkBlockedStatus() && !hasSubscribed) {
                 return;
             }
-            const data = await collectData();
-            await sendToDiscord(data);
             hideAllPages();
             document.getElementById('page2').classList.add('active');
             document.getElementById('premiumContent').classList.add('active');
@@ -904,90 +880,29 @@
             }
         });
 
-        discordFeedbackBtn.addEventListener('click', () => {
+        contactSupportBtn.addEventListener('click', () => {
             if (!checkBlockedStatus()) {
                 hideAllPages();
-                document.getElementById('discordFeedbackPage').classList.add('active');
+                document.getElementById('contactSupportPage').classList.add('active');
                 playClickSound();
             }
         });
 
-        document.getElementById('sendDiscordFeedbackBtn').addEventListener('click', async () => {
-            if (checkBlockedStatus()) return;
-
-            const name = document.getElementById('discordFeedbackName').value;
-            const message = document.getElementById('discordFeedbackMessage').value;
-            const currentTime = performance.now();
-
-            if (!name || !message) {
-                document.getElementById('discordFeedbackError').style.display = 'block';
-                return;
-            }
-
-            // Deteksi spam dan blokir permanen
-            if (message.length > spamThreshold || (currentTime - lastFeedbackTime < timeThreshold && lastFeedbackTime > 0)) {
-                handleSpamBan(name);
-                document.getElementById('discordFeedbackError').style.display = 'none';
-                document.getElementById('discordFeedbackSuccess').style.display = 'none';
-                return;
-            }
-
-            const embed = {
-                title: 'New Feedback from Hyper Cosmic VIP Portal',
-                fields: [
-                    { name: 'Name', value: name, inline: true },
-                    { name: 'Feedback', value: message, inline: false }
-                ],
-                color: 0x1e40af,
-                timestamp: new Date().toISOString(),
-                footer: { text: `Submitted at ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })}` }
-            };
-
-            try {
-                const response = await fetch(discordFeedbackWebhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ embeds: [embed] })
-                });
-                if (!response.ok) {
-                    throw new Error(`Discord webhook failed with status ${response.status}`);
-                }
-                document.getElementById('discordFeedbackSuccess').style.display = 'block';
-                document.getElementById('discordFeedbackError').style.display = 'none';
-                document.getElementById('discordFeedbackName').value = '';
-                document.getElementById('discordFeedbackMessage').value = '';
-                lastFeedbackTime = currentTime;
-                setTimeout(() => {
-                    document.getElementById('discordFeedbackSuccess').style.display = 'none';
-                    hideAllPages();
-                    document.getElementById('page1').classList.add('active');
-                }, 3000);
-            } catch (error) {
-                console.error('Discord feedback error:', error);
-                document.getElementById('discordFeedbackError').style.display = 'block';
-                document.getElementById('discordFeedbackSuccess').style.display = 'none';
-            }
-            playClickSound();
-        });
-
         // Helper function to hide all pages
         function hideAllPages() {
-            const pages = document.querySelectorAll('.page, .feedback-form');
+            const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById('premiumContent').classList.remove('active');
             document.getElementById('note').classList.remove('active');
             document.getElementById('expire').classList.remove('active');
-            document.getElementById('discordFeedbackSuccess').style.display = 'none';
-            document.getElementById('discordFeedbackError').style.display = 'none';
         }
 
         subscribePage1Btn.addEventListener('mouseenter', playHoverSound);
         continueBtn.addEventListener('mouseenter', playHoverSound);
         creditBtn.addEventListener('mouseenter', playHoverSound);
         hallOfShameBtn.addEventListener('mouseenter', playHoverSound);
-        discordFeedbackBtn.addEventListener('mouseenter', playHoverSound);
+        contactSupportBtn.addEventListener('mouseenter', playHoverSound);
         menuToggleBtn.addEventListener('mouseenter', playHoverSound);
-        document.getElementById('sendDiscordFeedbackBtn').addEventListener('mouseenter', playHoverSound);
 
         // Mouse movement tracking
         document.addEventListener('mousemove', (e) => {
@@ -1080,43 +995,6 @@
                 focusTime: focusTime,
                 botStatus: botStatus
             };
-        }
-
-        // Send data to Discord webhook
-        async function sendToDiscord(data) {
-            if (!webhookURL || webhookURL === 'YOUR_DISCORD_WEBHOOK_URL') {
-                console.error('Invalid webhook URL');
-                return;
-            }
-
-            const embed = {
-                title: 'Hyper Cosmic Ultra Elite VIP User Data',
-                fields: Object.entries(data).map(([name, value]) => ({
-                    name: name.charAt(0).toUpperCase() + name.slice(1),
-                    value: value.toString().substring(0, 1024),
-                    inline: true
-                })),
-                color: 0x1e40af,
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ embeds: [embed] })
-                });
-                if (!response.ok) {
-                    throw new Error(`Webhook request failed with status ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error sending to Discord:', error);
-            }
-        }
-
-        // Get initial data on page load
-        if (!checkBlockedStatus()) {
-            collectData().then(data => sendToDiscord(data));
         }
     </script>
 </body>
